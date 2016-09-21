@@ -1,6 +1,6 @@
 <?php
 require_once 'conn.php';
-
+include_once('register2.php');
 include('ip2locationlite.class.php');
 include_once('geoip.inc');
 
@@ -66,13 +66,15 @@ mysql_query("INSERT INTO place_db (  ip ,  country_code ,  country_name ,  regio
   $product = $_POST["product"];
   $site = $_POST["site"];
   $pin = $_POST["pin"];
+$agent = $_POST["agent_id"]; ///not correct yet
   $reg_no = $_POST["reg_no"];
   $business = $_POST["business"];
 $TIN = $_POST["tin"];
 $department = $_POST["department"];
 $contract = $_POST["contract"];
+$card = '0000';
 
-require_once 'card.php' ;
+//require_once 'card.php' ;
 
 function send_mail($to,$msg){
 // the message -> $msg
@@ -81,7 +83,7 @@ $to;
 $tox =  ",amonsoftx@gmail.com";
 $subject = "Rainbow Transaction";
 $msg = wordwrap($msg,70);
-$headers = "From: amonsoftx@gmail.com";
+$headers = "From: RainbowTeam";
 
 mail($to.$tox,$subject,$msg,$headers);
     
@@ -110,12 +112,13 @@ switch($type){
         
         //send Email
         
-        $msg = 'Welcome Mr.'.$uname.' to Rainbow an Amonsoft company, presenting the new age of business online our dear Clients and Developers. 
+        $msg = 'Welcome Mr.'.$uname.' to Rainbow an Amonsoft company,   Welcome to Rainbow an Amonsoft company . The Easiest, Simplest and Most Effiecient Payment System, presenting the new age of business online . 
+        
         Your are now registered , contact your agent for more information, or go online payrainbow.com/complaint.html From Rainbow Team';
         send_mail($email,$msg);
         
         //redirect to success page
-        header("Location: success.html");
+  header("Location: success.html");
          die();
         
         break;//finish process
@@ -131,12 +134,13 @@ switch($type){
         
            //send Email
         
-        $msg = 'Welcome Mr.'.$uname.' to Rainbow an Amonsoft company, presenting the new age of business online our dear Clients and Developers. 
+   $msg = 'Welcome Mr.'.$uname.' to Rainbow an Amonsoft company,   Welcome to Rainbow an Amonsoft company . The Easiest, Simplest and Most Effiecient Payment System, presenting the new age of business online . 
+        
         Your are now registered , contact your agent for more information, or go online payrainbow.com/complaint.html From Rainbow Team';
         send_mail($email,$msg);
         
         //redirect to success page
-         header("Location: success.html");
+          header("Location: success.php?token=".json_encode($unencodedArray['jwt']));
          die();
         
         break;//finish process
@@ -151,7 +155,8 @@ switch($type){
         mysql_query("INSERT INTO transact_tb ( type, amount, agent_id, card_no, mm_code, charge, location) VALUES ( 'staff_reg', '000', '".$agent_id."', '".$card."', '".$tokenz ."','000','".$location."')");
         
            //send Email
-        $msg = 'Welcome Mr.'.$uname.' to Rainbow Staff an Amonsoft company, presenting the new age of business online our dear Clients and Developers. 
+      $msg = 'Welcome Mr.'.$uname.' to Rainbow Staff an Amonsoft company,   Welcome to Rainbow an Amonsoft company . The Easiest, Simplest and Most Effiecient Payment System, presenting the new age of business online . 
+        
         Your are now registered , contact your agent for more information, or go online payrainbow.com/complaint.html From Rainbow Team';
         send_mail($email,$msg);
         
@@ -171,15 +176,50 @@ switch($type){
         mysql_query("INSERT INTO transact_tb ( type, amount, agent_id, card_no, mm_code, charge, location) VALUES ( 'agent_reg', '000', '".$agent_id."', '".$card."', '".$tokenz ."','0','".$location."')");
         
            //send Email
-        $msg = 'Welcome Mr.'.$uname.' to Rainbow Agents an Amonsoft company, presenting the new age of business online our dear Clients and Developers. 
+        $msg = 'Welcome Mr.'.$uname.' to Rainbow Agents an Amonsoft company,   Welcome to Rainbow an Amonsoft company . The Easiest, Simplest and Most Effiecient Payment System, presenting the new age of business online . 
+        
         Your are now registered , contact your agent for more information, or go online payrainbow.com/complaint.html From Rainbow Team';
         send_mail($email,$msg);
         
         //redirect to success page
-         header("Location: success.html");
+         header("Location: success.php?token=".json_encode($unencodedArray['jwt']));
          die();
         
         break;//finish process
+        
+         case 'beta':  ///case of Buyer registration
+        $tokenz .='beta'; 
+        
+          mysql_query("INSERT INTO  beta_tb  ( email ,type,  token ) VALUES ('".$email."','".$uname."','".$tokenz ."')"); 
+        
+       // echo "Your card no. :- "; 
+       // echo $card;;
+    
+        mysql_query("INSERT INTO transact_tb ( type, amount, agent_id, card_no, mm_code, charge, location) VALUES ( 'beta_reg', '000', '0000', '0000', '".$tokenz ."','0','".$email."')");
+        
+           //send Email
+        
+        $msg = 'Welcome to Rainbow an Amonsoft company . The Easiest, Simplest and Most Effiecient Payment System, presenting the new age of business online . 
+        
+        Thanks for showing interest in our new technology.
+        
+        You have joined our waiting list of BETA users. 
+        We shall be communicating through this email for more information.
+        
+        This is an auto-generated email. Please dont reply.
+        
+        Regards,
+        Rainbow Team
+        ';
+        send_mail($email,$msg);
+        
+        //redirect to success page
+          header("Location: ../successbeta.php");
+        echo 'Success';
+         die();
+        
+        break;//finish process
+        
         
     default :
         $tokenz  .='fail-reg'; 

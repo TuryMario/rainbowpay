@@ -1,6 +1,15 @@
 {
+    
+    "minimum-stability": "dev",
     "require": {
         "geoip2/geoip2": "~2.0",
-        "maxmind-db/reader": "~1.0"
+        "maxmind-db/reader": "~1.0",
+        "namshi/jose": "7.0.0",
+        "oauth-io/oauth": "0.2.0",
+        "firebase/php-jwt": "^4.0",
+        "bugsnag/bugsnag": "^3.0",
+        "paragraph1/php-fcm": "^0.7.0"
+       
     }
+   
 }

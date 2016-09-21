@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+    <meta charset="UTF-8">
+    <title>Rainbow by Amonsoft</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+        <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
+        <script src="scripts/jquery-2.2.3.min.js"></script>
+  </head>
+    <body>
+         <section  class="page-header">
+          <a href="index.html" class="btn">HOME</a>
+     <h2>Card Assignment</h2>
+     <h4>Form</h4>
+    <form action="cardassign.php" method="post" autocomplete="" >
+ 
+        <select name="type" id="type" required  class="btn" style="color:black;">
+        <option value="buyer">Buyer</option>
+            <option value="staff">Staff</option>
+            <option value="seller">Seller</option>
+            <option value="agent">Agent</option>
+        </select>
+        </br></br>
+ <input name="tel" type="tel" placeholder="Telephone" id="tel" required class="btn" /></br>
+ <input name="email" type="email" id="email" placeholder="Email" required class="btn" /></br>
+ <input name="nid" id="nid" placeholder="National ID" type="number" required class="btn"  /></br>
+<input name="card" id="card" type="number" placeholder="Card Number" required class="btn"  /></br></br>
+ <input name="agent_id" id="agent_id" type="number" placeholder="Agent_id" required class="btn"  /></br></br>
+ 
+
+<button type="submit" class="btn" >Register</button>
+</form>
+
+
+</section>
+    </body>
+
+<script>
+     // Initialize Firebase
+    /*
+  var config = {
+    apiKey: "AIzaSyCWiOxfjaIxZpRySZ24HKWrS5j9EqZ1p4M",
+    authDomain: "rainbow-512e0.firebaseapp.com",
+    databaseURL: "https://rainbow-512e0.firebaseio.com",
+    storageBucket: "rainbow-512e0.appspot.com",
+  };
+  firebase.initializeApp(config);
+    
+    
+    $(document).ready(function(){
+$("#btn").click(function(){
+     
+        var email = document.getElementById('email').value;
+        var password = document.getElementById('pwd').value;
+            
+    firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+  // Handle Errors here.
+  var errorCode = error.code;
+  var errorMessage = error.message;
+  
+        console.log(errorMessage);
+        console.log(errorCode);
+        // var errorx = document.getElementById('error');
+       // errorx.innerHTML = errorMessage;
+});
+        
+});
+    });   
+    */
+</script>
+    
+    
+</html>

@@ -3,9 +3,16 @@ require_once 'conn.php'; //connection link
 //header('Allow-Control-Allow-Origin:*');//allowing
 header('Access-Control-Allow-Origin: *');
 //external resource access
-
+require_once('vendor/autoload.php');
+use \Firebase\JWT\JWT;
+//for JWT auth
 include('ip2locationlite.class.php');
 include_once('geoip.inc');
+
+
+
+if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+	/* special ajax here */
 
  
 //Load the class
@@ -54,7 +61,6 @@ $timeZone  = $locations['timeZone'];
 mysql_query("INSERT INTO place_db (  ip ,  country_code ,  country_name ,  region_name ,  city_name ,  latitude ,  longitude ,  timeZone ,  status_code ,  continent_code ,  host_name,zipCode )
  VALUES ( '".$ipAddress."', '".$countryCode."', '".$countryName."', '".$regionName."', '".$cityName."', '".$latitude."', '".$longitude."', '".$timeZone."', '".$statuscode."', '".$_SERVER['REQUEST_URI']."', '".$hostname."','".$zipCode."')");
 
-
 //varaibles passed
    $card =  $_POST["card"]; /***/
    $amount = $_POST["amount"];  /***/
@@ -63,6 +69,8 @@ mysql_query("INSERT INTO place_db (  ip ,  country_code ,  country_name ,  regio
    $quantity = $_POST["quantity"];
    $name = $_POST["name"];  /***/
    $pin = $_POST["pin"];  /***/
+     //recieve key or token
+    $keyz = $_POST['key'];
 //check card and user and seller
 
 /**card check **/
@@ -84,19 +92,28 @@ $seller_check = mysql_query("SELECT * FROM seller_tb WHERE id = '".$seller."'");
 $seller_row = mysql_fetch_assoc($seller_check);
 //user exists
 
+    //check the key of sender to validate the sender securely
+    /************************************code base for jwt AUth*********************/
+    
+    
+    try{
+               $secretKey = base64_decode('Your-Secret-Key'); 
+               $DecodedDataArray = JWT::decode($keyz, $secretKey, array('HS512'));
+ 
 if( $card_row != 0  &&  $buyer_row != 0  && $seller_row != 0 && $check_money > $amount  ){ // means all exist
 
     //compute charge
-    $charge_rate = 0.01;
+    $charge_rate = 0.05;
     $charge = $amount * $charge_rate;
     
     //seller cash
     $seller_cash = $amount - $charge;
     
+    
     //create token for purchase
-    $num = array('0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','y','z');
+    $num = array('0','1','2','q','r','s','t','u','v','w','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','y','z','0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','y','z');
 
-for($i=0;$i<26;$i++){ // Token
+for($i=0;$i<52;$i++){ // Token
    // echo $num[rand(0,$i)] ;
     $token .= $num[rand(rand(0,$i),$i)] ;
 //concatinate  the token
@@ -117,12 +134,19 @@ for($i=0;$i<26;$i++){ // Token
      mysql_query("INSERT INTO transact_tb ( type, amount, agent_id, card_no, mm_code, charge, location,balance) VALUES ( 'purchase', '".$amount."', '0000', '".$card."', '".$token."','".$charge."','".$seller."','".$new_buyer_balance."')");
     echo json_encode($token.'success');
     
+    //update Token watching system
+    mysql_query('INSERT INTO token_transact (token, trans_type, amount) VALUES ( "'.$keyz.'", "purchase", "'.$amount.'")');
+    
 }else{
+     
+    //update Token watching system
+    mysql_query('INSERT INTO token_transact (token, trans_type, amount) VALUES ( "'.$keyz.'", "purchase", "'.$amount.'")');
+    
     //do otherwise
     //create token for failed_purchase
-    $num = array('0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','y','z');
+    $num = array('0','1','2','q','r','s','t','u','v','w','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','y','z','0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','y','z');
 
-for($i=0;$i<26;$i++){
+for($i=0;$i<52;$i++){
    // echo $num[rand(0,$i)] ;
     $token .= $num[rand(rand(0,$i),$i)] ;
 //concatinate  the token
@@ -133,7 +157,18 @@ for($i=0;$i<26;$i++){
      mysql_query("INSERT INTO transact_tb ( type, amount, agent_id, card_no, mm_code, charge, location,balance) VALUES ( 'failed_purchase', '".$amount."', '0000', '".$card."', '".$token."','0000','".$seller."','".$buyer_row['balance']."')");
     
  echo json_encode($token.'failed');
+}
+    
+               } catch (Exception $e) {
+       echo "{'status' : 'fail' ,'msg':'Unauthorized'}";
+        
+    die();
+               }
+        
+    
+    /*************End of JWT code base*****************************/
+    
+    
 
 }
-
 ?>

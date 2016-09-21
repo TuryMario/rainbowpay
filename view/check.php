@@ -81,13 +81,13 @@ VALUES ( '".$row_pending['seller']."', '".$row_pending['amount']."', CURRENT_TIM
      mysql_query("INSERT INTO transact_tb ( type, amount, agent_id, card_no, mm_code, charge, location,balance) VALUES ( 'approval', '".$row_pending['amount']."', 'admin', '".$row_pending['card_no_seller']."', '".$token."','00','".$invoice."','0000')");
     //pay seller
     
-         $sql_balance = mysql_query("SELECT balance FROM seller_tb WHERE username = '".$row_pending['seller']."'");
+         $sql_balance = mysql_query("SELECT balance FROM seller_tb WHERE card_no = '".$row_pending['card_no_seller']."'");
          $row_balance = mysql_fetch_array($sql_balance);
         
     
          $new_balance = $row_balance['balance'] + $row_pending['amount'];
         
-    mysql_query("UPDATE  seller_tb SET balance = '".$new_balance."' WHERE username = '".$row_pending['seller']."' ");  
+    mysql_query("UPDATE  seller_tb SET balance = '".$new_balance."' WHERE card_no = '".$row_pending['card_no_seller']."'");  
     
     
     echo "Success";
